@@ -409,6 +409,19 @@ class ServiceClient {
     );
   }
 
+  getExportLead(exportId) {
+    return this.agent.get(`/export/lead/${exportId}/`);
+  }
+
+  postExportLead() {
+    return this.agent.post("/export/lead/")
+      .send({
+        format: "json",
+        type: "leads",
+        send_done_email: false
+      });
+  }
+
   /**
    * Checks whether the API key is theoretically valid.
    *

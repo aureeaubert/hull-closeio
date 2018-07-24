@@ -42,6 +42,8 @@ function server(app: $Application): $Application {
   app.get("/fields-lead-out", cors(), actions.fieldsLeadOutbound);
   app.get("/fields-account-ident", cors(), actions.fieldsAccountIdent);
 
+  app.post("/trigger-leads-export", cors(), actions.triggerLeadsExport);
+
   app.all("/status", actions.statusCheck);
 
   return app;

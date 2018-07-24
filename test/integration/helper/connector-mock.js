@@ -32,7 +32,7 @@ class ContextMock {
       updateSettings: () => {
         return Promise.resolve(this.connector);
       }
-    }
+    };
   }
 }
 

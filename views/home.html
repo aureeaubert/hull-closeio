@@ -16,6 +16,20 @@
                   Fetch recently updated Close.io Leads and linked Contacts. When run just after installing the connector, it will fetch last 2 days, otherwise it will fetch recent leads.
                 </p>
                 <div data-href="/fetch-recent-leads" class="center-block btn btn-rounded btn-pill btn-primary">Fetch Recently Updated Leads</div>
+
+                <p>Export</p>
+                <% if (pendingExport && pendingExport.progress && pendingExport.total) { %>
+                <p>You have got a pending export:<br />
+                  Close.io progress: <%= pendingExport.progress %> / <%= pendingExport.total %><br />
+                  Close.io status: <%= pendingExport.status %><br />
+                  <% if (pendingExport.status === "done") { %>
+                  Close.io done processing their export but data is still being processed by Hull.<br />
+                  <% } %>
+                  You won't be able to trigger new export before the pending is finished.
+                </p>
+                <% } else { %>
+                <div data-href-export="/trigger-leads-export" class="center-block btn btn-rounded btn-pill btn-primary">Trigger a full leads export</div>
+                <% } %>
               </div>
             </div>
           </div>
@@ -31,7 +45,25 @@
         $("[data-href]").click(function() {
           var url = $(this).attr('data-href');
           swal({
-            title: "Fetch all contacts",
+            title: "Fetch recently updated leads",
+            text: "You are going to fetch your recent Close.io Leads and linked Contacts. This can generate a lot of traffic. Are you sure?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, fetch all!",
+            closeOnConfirm: false
+          }, function(isConfirm) {
+            if (isConfirm) {
+              $.post(url+window.location.search);
+              swal("Fetching started", "The Leads and Contacts will be fetched shortly.", "success");
+            }
+          });
+        });
+
+        $("[data-href-export]").click(function() {
+          var url = $(this).attr('data-href-export');
+          swal({
+            title: "Trigger full leads export",
             text: "You are going to fetch your recent Close.io Leads and linked Contacts. This can generate a lot of traffic. Are you sure?",
             type: "warning",
             showCancelButton: true,

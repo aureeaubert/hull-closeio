@@ -11,6 +11,7 @@ const userUpdate = require("./user-update");
 const accountUpdate = require("./account-update");
 const fetch = require("./fetch");
 const adminHandler = require("./admin-handler");
+const triggerLeadsExport = require("./trigger-leads-export");
 
 module.exports = {
   fieldsContactInbound,
@@ -23,5 +24,6 @@ module.exports = {
   fieldsStatus,
   fetch,
   adminHandler,
-  fieldsAccountIdent
+  fieldsAccountIdent,
+  triggerLeadsExport
 };

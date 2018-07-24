@@ -668,6 +668,14 @@ class SyncAgent {
     );
   }
 
+  async triggerLeadsExport() {
+    const result = await this.serviceClient.postExportLead();
+    const exportId = result.body.id;
+    await this.helpers.updateSettings({
+      pending_export_id: exportId
+    });
+  }
+
   /**
    * Checks whether the API key is provided at all and hypothetically valid.
    *
