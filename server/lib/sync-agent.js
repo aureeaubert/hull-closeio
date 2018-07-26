@@ -22,12 +22,20 @@ import type {
 const _ = require("lodash");
 const { DateTime, Duration } = require("luxon");
 // const debug = require("debug")("hull-closeio:sync-agent");
+const {
+  pipeStreamToPromise,
+  promiseToTransformStream,
+  settingsUpdate
+} = require("hull/lib/utils");
+const ImportS3Stream = require("hull/lib/utils/import-s3-stream");
+
+const promisePipe = require("promisepipe");
+const AWS = require("aws-sdk");
 
 const MappingUtil = require("./sync-agent/mapping-util");
 const FilterUtil = require("./sync-agent/filter-util");
 const ServiceClient = require("./service-client");
 const CONTACT_FIELDDEFS = require("./sync-agent/contact-fielddefs");
-const pipeStreamToPromise = require("./support/pipe-stream-to-promise");
 
 const BASE_API_URL = "https://app.close.io/api/v1";
 
@@ -96,9 +104,6 @@ class SyncAgent {
    * @memberof SyncAgent
    */
   connector: THullConnector;
-
-  helpers: Object;
-
   /**
    * Creates an instance of SyncAgent.
    * @param {THullReqContext} reqContext The request context.
@@ -112,13 +117,10 @@ class SyncAgent {
     this.cache = reqContext.cache;
     // Initialize the connector
     this.connector = reqContext.connector;
-    this.helpers = reqContext.helpers;
 
     // Initialize configuration from settings
-    const loadedSettings: CioConnectorSettings = _.get(
-      reqContext,
-      "ship.private_settings"
-    );
+    const loadedSettings: CioConnectorSettings =
+      reqContext.connector.private_settings;
     this.normalizedPrivateSettings = this.normalizeSettings(loadedSettings);
 
     // Configure the filter util
@@ -423,12 +425,20 @@ class SyncAgent {
       );
     })
       .then(() => {
-        this.helpers.updateSettings({
-          last_sync_at: Math.floor(DateTime.utc().toMillis() / 1000)
-        });
-        this.hullClient.logger.info("incoming.job.success");
+        return settingsUpdate(
+          {
+            client: this.hullClient,
+            cache: this.cache,
+            connector: this.connector
+          },
+          {
+            last_sync_at: Math.floor(DateTime.utc().toMillis() / 1000)
+          }
+        );
       })
+      .then(() => this.hullClient.logger.info("incoming.job.success"))
       .catch(error => {
+        console.log(error);
         this.hullClient.logger.error("incoming.job.error", { reason: error });
       });
   }
@@ -671,9 +681,77 @@ class SyncAgent {
   async triggerLeadsExport() {
     const result = await this.serviceClient.postExportLead();
     const exportId = result.body.id;
-    await this.helpers.updateSettings({
-      pending_export_id: exportId
+    await settingsUpdate(
+      { client: this.hullClient, cache: this.cache, connector: this.connector },
+      {
+        pending_export_id: exportId,
+        handle_leads_export_interval: "5"
+      }
+    );
+  }
+
+  async handleLeadsExport() {
+    this.hullClient.logger.info("incoming.job.start");
+    if (!this.normalizedPrivateSettings.pending_export_id) {
+      this.hullClient.logger.info("incoming.job.skip", {
+        reason: "No pending export id"
+      });
+      return Promise.resolve();
+    }
+    await this.initialize();
+    let leadsExportStream;
+    try {
+      leadsExportStream = await this.serviceClient.getExportLeadStream(
+        this.normalizedPrivateSettings.pending_export_id
+      );
+    } catch (error) {
+      this.hullClient.logger.info("incoming.job.skip");
+      return Promise.resolve();
+    }
+
+    const transformLeads = promiseToTransformStream(lead => {
+      const leadToImport = this.mappingUtil.mapLeadToHullAccountImportObject(
+        lead
+      );
+      if (leadToImport === null) {
+        return Promise.resolve();
+      }
+      return Promise.resolve(leadToImport);
     });
+
+    const importS3Stream = new ImportS3Stream(
+      {
+        hullClient: this.hullClient,
+        s3: new AWS.S3()
+      },
+      {
+        s3Bucket: "michaloo-heroku-logs"
+      }
+    );
+
+    return promisePipe(leadsExportStream, transformLeads, importS3Stream)
+      .then(() => {
+        this.hullClient.logger.info(
+          "incoming.job.success",
+          importS3Stream.importResults.map(result =>
+            _.pick(result, "settings.size", "job_id")
+          )
+        );
+        return settingsUpdate(
+          {
+            client: this.hullClient,
+            cache: this.cache,
+            connector: this.connector
+          },
+          {
+            handle_leads_export_interval: "720",
+            pending_export_id: null
+          }
+        );
+      })
+      .catch(error => {
+        this.hullClient.logger.info("incoming.job.error", error);
+      });
   }
 
   /**

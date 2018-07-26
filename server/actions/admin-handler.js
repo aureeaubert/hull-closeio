@@ -22,9 +22,8 @@ function adminHandler(req: $Request, res: $Response) {
           pendingExport
         });
       });
-    console.log(req.hull.ship.private_settings.pending_export_id);
   }
-  res.render("home.html", {
+  return res.render("home.html", {
     name: "Close.io",
     pendingExport
   });

@@ -53,7 +53,7 @@
       "default": "hull-default",
       "options": {
         "loadOptions": "/leadstatuses"
-      } 
+      }
     },
     {
       "name": "lead_identifier_hull",
@@ -63,7 +63,7 @@
       "default": "domain",
       "options": {
         "loadOptions": "/fields-account-ident"
-      } 
+      }
     },
     {
       "name": "lead_identifier_service",
@@ -73,7 +73,7 @@
       "default": "url",
       "options": {
         "loadOptions": "/fields-lead-out"
-      } 
+      }
     },
     {
       "name": "leadsync_title",
@@ -111,7 +111,7 @@
           "hull_field_name",
           "closeio_field_name"
         ]
-      } 
+      }
     },
     {
       "name" : "lead_attributes_inbound",
@@ -165,6 +165,13 @@
       "options" : {
         "loadOptions" : "/fields-contact-in"
       }
+    },
+    {
+      "name": "handle_leads_export_interval",
+      "title": "Leads export interval (in minutes)",
+      "type": "string",
+      "format": "hidden",
+      "default": "720"
     }
   ],
   "readme": "readme.md",
@@ -180,6 +187,12 @@
       "url": "/status",
       "type": "cron",
       "value": "*/30 * * * *"
+    },
+    {
+      "url": "/handle-leads-export",
+      "type": "interval",
+      "value_from": "private_settings.handle_leads_export_interval",
+      "default": "720"
     }
   ],
   "subscriptions": [{"url": "/smart-notifier"}]

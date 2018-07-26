@@ -7,7 +7,7 @@ const SyncAgent = require("../lib/sync-agent");
 const SHARED_MESSAGES = require("../lib/shared-messages");
 
 function statusCheckAction(req: THullRequest, res: $Response): void {
-  if (_.has(req, "hull.ship.private_settings")) {
+  if (_.has(req, "hull.connector.private_settings")) {
     const { client } = req.hull;
     const connector = req.hull.connector || req.hull.ship;
     const syncAgent = new SyncAgent(req.hull);

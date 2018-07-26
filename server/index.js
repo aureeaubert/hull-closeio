@@ -6,10 +6,10 @@ const server = require("./server");
 const { LOG_LEVEL, SECRET, PORT } = process.env;
 
 if (LOG_LEVEL) {
-  Hull.logger.transports.console.level = LOG_LEVEL;
+  Hull.Client.logger.transports.console.level = LOG_LEVEL;
 }
 
-Hull.logger.transports.console.json = true;
+Hull.Client.logger.transports.console.json = true;
 
 const options = {
   hostSecret: SECRET || "1234",

@@ -19,11 +19,13 @@ import type {
 const _ = require("lodash");
 const { DateTime } = require("luxon");
 const debug = require("debug")("hull-closeio:service-client");
+const { promiseToReadableStream } = require("hull/lib/utils");
+const JSONStream = require("JSONStream");
+const unzip = require("unzip-stream");
 
 const superagent = require("superagent");
 const SuperagentThrottle = require("superagent-throttle");
 const prefixPlugin = require("superagent-prefix");
-const promiseToReadableStream = require("./support/promise-to-readable-stream");
 
 const {
   superagentUrlTemplatePlugin,
@@ -409,18 +411,54 @@ class ServiceClient {
     );
   }
 
-  getExportLead(exportId) {
+  getExportLead(exportId: string): Promise<*> {
     return this.agent.get(`/export/lead/${exportId}/`);
   }
 
   postExportLead() {
-    return this.agent.post("/export/lead/")
-      .send({
-        format: "json",
-        type: "leads",
-        send_done_email: false
+    return this.agent.post("/export/lead/").send({
+      format: "json",
+      type: "leads",
+      send_done_email: false
+    });
+  }
+
+  getExportLeadStream(exportId: string): Promise<Readable> {
+    return this.getExportLead(exportId)
+      .then(response => {
+        if (response.body.status !== "done" || !response.body.download_url) {
+          return Promise.reject(new Error("Export is not done yet"));
+        }
+        return this.agent
+          .get(response.body.download_url)
+          .ok(res => res.status === 302);
+      })
+      .then(downloadUrlResponse => {
+        const downloadUrl = downloadUrlResponse.headers.location;
+        return superagent.get(downloadUrl);
+      })
+      .then(downloadStream => {
+        const decoder = JSONStream.parse("*");
+        downloadStream.pipe(unzip.Parse()).on("entry", entry => {
+          const filePath = entry.path;
+          const type = entry.type;
+          if (type === "File" && filePath.match(/\.json$/)) {
+            entry.pipe(decoder);
+            entry.on("error", error => {
+              entry.destroy(error);
+              decoder.destroy(error);
+            });
+          } else {
+            entry.autodrain();
+          }
+        });
+        return decoder;
       });
   }
+
+  // createExportJsonDecodeStream(): Transform {
+
+  // }
 
   /**
    * Checks whether the API key is theoretically valid.

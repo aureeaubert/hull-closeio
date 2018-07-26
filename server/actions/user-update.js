@@ -9,9 +9,7 @@ function userUpdate(
   messages: Array<THullUserUpdateMessage>
 ): Promise<*> {
   const syncAgent = new SyncAgent(ctx);
-  return syncAgent.sendUserMessages(messages).catch(err => {
-    console.error(">>>> ERROR <<<<", err); // TODO: Add logger
-  });
+  return syncAgent.sendUserMessages(messages);
 }
 
 module.exports = userUpdate;

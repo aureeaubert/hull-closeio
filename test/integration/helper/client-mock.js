@@ -18,6 +18,11 @@ class ClientMock {
     this.asUser = jest.fn(() => this);
     this.asAccount = jest.fn(() => this);
     this.account = jest.fn(() => this);
+    this.utils = {
+      settings: {
+        update: () => Promise.resolve({})
+      }
+    }
   }
 }
 

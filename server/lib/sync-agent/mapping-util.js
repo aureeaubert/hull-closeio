@@ -179,6 +179,27 @@ class MappingUtil {
     return ident;
   }
 
+  mapLeadToHullAccountImportObject(lead: CioLeadRead): Object | null {
+    const leadIdent = this.mapLeadToHullAccountIdent(lead);
+    const leadAttributes = this.mapLeadToHullAccountAttributes(lead);
+
+    if (!leadIdent.external_id && !leadIdent.domain) {
+      return null;
+    }
+
+    const leadToImport = {};
+    leadToImport.traits = leadAttributes;
+    if (leadIdent.external_id) {
+      leadToImport.external_id = leadIdent.external_id;
+    }
+
+    if (leadIdent.domain) {
+      leadToImport.domain = leadIdent.domain;
+    }
+
+    return leadToImport;
+  }
+
   /**
    * Maps a close.io object to an object of traits that can be sent to
    * the Hull platform.

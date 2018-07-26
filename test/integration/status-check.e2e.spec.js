@@ -37,7 +37,7 @@ describe("statusCheckAction", () => {
       url: "https://hull-closeio.herokuapp.com/",
       hull: {
         client: clientMock,
-        ship: new ShipMock("1234", {}, private_settings)
+        connector: new ShipMock("1234", {}, private_settings)
       }
     };
 
@@ -78,7 +78,7 @@ describe("statusCheckAction", () => {
       url: "https://hull-closeio.herokuapp.com/",
       hull: {
         client: clientMock,
-        ship: new ShipMock("1234", {}, private_settings)
+        connector: new ShipMock("1234", {}, private_settings)
       }
     };
 
@@ -121,7 +121,7 @@ describe("statusCheckAction", () => {
       url: "https://hull-closeio.herokuapp.com/",
       hull: {
         client: clientMock,
-        ship: new ShipMock("1234", {}, private_settings)
+        connector: new ShipMock("1234", {}, private_settings)
       }
     };
 
@@ -165,7 +165,7 @@ describe("statusCheckAction", () => {
       url: "https://hull-closeio.herokuapp.com/",
       hull: {
         client: clientMock,
-        ship: {}
+        connector: {}
       }
     };
 

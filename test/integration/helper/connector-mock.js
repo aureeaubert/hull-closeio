@@ -26,12 +26,10 @@ class ContextMock {
       }),
       set: jest.fn(() => {
         return Promise.resolve();
+      }),
+      del: jest.fn(() => {
+        return Promise.resolve();
       })
-    };
-    this.helpers = {
-      updateSettings: () => {
-        return Promise.resolve(this.connector);
-      }
     };
   }
 }
