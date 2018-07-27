@@ -104,6 +104,9 @@ class SyncAgent {
    * @memberof SyncAgent
    */
   connector: THullConnector;
+
+  s3Bucket: string;
+
   /**
    * Creates an instance of SyncAgent.
    * @param {THullReqContext} reqContext The request context.
@@ -140,6 +143,8 @@ class SyncAgent {
     };
 
     this.serviceClient = new ServiceClient(configServiceClient);
+    this.s3Bucket = process.env.AWS_S3_BUCKET;
+    this.settingsUpdate = settingsUpdate.bind(null, reqContext);
   }
 
   isInitialized(): boolean {
@@ -425,16 +430,9 @@ class SyncAgent {
       );
     })
       .then(() => {
-        return settingsUpdate(
-          {
-            client: this.hullClient,
-            cache: this.cache,
-            connector: this.connector
-          },
-          {
-            last_sync_at: Math.floor(DateTime.utc().toMillis() / 1000)
-          }
-        );
+        return this.settingsUpdate({
+          last_sync_at: Math.floor(DateTime.utc().toMillis() / 1000)
+        });
       })
       .then(() => this.hullClient.logger.info("incoming.job.success"))
       .catch(error => {
@@ -681,13 +679,10 @@ class SyncAgent {
   async triggerLeadsExport() {
     const result = await this.serviceClient.postExportLead();
     const exportId = result.body.id;
-    await settingsUpdate(
-      { client: this.hullClient, cache: this.cache, connector: this.connector },
-      {
-        pending_export_id: exportId,
-        handle_leads_export_interval: "5"
-      }
-    );
+    await this.settingsUpdate({
+      pending_export_id: exportId,
+      handle_leads_export_interval: "5"
+    });
   }
 
   async handleLeadsExport() {
@@ -705,7 +700,7 @@ class SyncAgent {
         this.normalizedPrivateSettings.pending_export_id
       );
     } catch (error) {
-      this.hullClient.logger.info("incoming.job.skip");
+      this.hullClient.logger.info("incoming.job.skip", { reason: error });
       return Promise.resolve();
     }
 
@@ -719,35 +714,79 @@ class SyncAgent {
       return Promise.resolve(leadToImport);
     });
 
-    const importS3Stream = new ImportS3Stream(
+    const transformContacts = promiseToTransformStream(
+      (lead, encoding, push) => {
+        const leadToImport = this.mappingUtil.mapLeadToHullAccountImportObject(
+          lead
+        );
+        if (leadToImport === null) {
+          return Promise.resolve();
+        }
+        lead.contacts.forEach(contact => {
+          const contactToImport = this.mappingUtil.mapContactToHullUserImportObject(
+            leadToImport,
+            contact
+          );
+          if (contactToImport === null) {
+            return null;
+          }
+          return push(contactToImport);
+        });
+        return Promise.resolve();
+      }
+    );
+
+    const importS3StreamAccounts = new ImportS3Stream(
       {
         hullClient: this.hullClient,
         s3: new AWS.S3()
       },
       {
-        s3Bucket: "michaloo-heroku-logs"
+        s3Bucket: this.s3Bucket,
+        importType: "accounts",
+        emitEvent: false,
+        notify: false,
+        s3KeyTemplate: `hull-closeio/${
+          this.connector.id
+        }/accounts/<%= partIndex %>.json`
       }
     );
 
-    return promisePipe(leadsExportStream, transformLeads, importS3Stream)
+    const importS3StreamUsers = new ImportS3Stream(
+      {
+        hullClient: this.hullClient,
+        s3: new AWS.S3()
+      },
+      {
+        s3Bucket: this.s3Bucket,
+        importType: "users",
+        emitEvent: false,
+        notify: false,
+        s3KeyTemplate: `hull-closeio/${
+          this.connector.id
+        }/users/<%= partIndex %>.json`
+      }
+    );
+
+    const promises = [
+      promisePipe(leadsExportStream, transformLeads, importS3StreamAccounts),
+      promisePipe(leadsExportStream, transformContacts, importS3StreamUsers)
+    ];
+
+    return Promise.all(promises)
       .then(() => {
-        this.hullClient.logger.info(
-          "incoming.job.success",
-          importS3Stream.importResults.map(result =>
+        this.hullClient.logger.info("incoming.job.success", {
+          accounts: importS3StreamAccounts.importResults.map(result =>
+            _.pick(result, "settings.size", "job_id")
+          ),
+          contacts: importS3StreamUsers.importResults.map(result =>
             _.pick(result, "settings.size", "job_id")
           )
-        );
-        return settingsUpdate(
-          {
-            client: this.hullClient,
-            cache: this.cache,
-            connector: this.connector
-          },
-          {
-            handle_leads_export_interval: "720",
-            pending_export_id: null
-          }
-        );
+        });
+        return this.settingsUpdate({
+          handle_leads_export_interval: "720",
+          pending_export_id: null
+        });
       })
       .catch(error => {
         this.hullClient.logger.info("incoming.job.error", error);
