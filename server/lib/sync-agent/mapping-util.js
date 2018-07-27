@@ -187,7 +187,6 @@ class MappingUtil {
         transformedLead[`custom.${customFieldDef.id}`] = value;
       }
     });
-    console.log("mapLeadToHullAccountImportObject", transformedLead);
     const leadIdent = this.mapLeadToHullAccountIdent(transformedLead);
     const leadAttributes = this.mapLeadToHullAccountAttributes(transformedLead);
 
@@ -198,13 +197,12 @@ class MappingUtil {
     const leadToImport = {};
     leadToImport.traits = leadAttributes;
     if (leadIdent.external_id) {
-      leadToImport.external_id = leadIdent.external_id;
+      leadToImport.accountId = leadIdent.external_id;
     }
 
     if (leadIdent.domain) {
-      leadToImport.domain = leadIdent.domain;
+      leadToImport.traits.domain = leadIdent.domain;
     }
-    console.log(">>> leadToImport", leadToImport);
     return leadToImport;
   }
 
@@ -221,8 +219,8 @@ class MappingUtil {
 
     const contactToImport = {};
     contactToImport.traits = contactAttributes;
-    contactToImport.account_id = leadToImport.external_id;
-    contactToImport.email = contactIdent.email;
+    contactToImport.accountId = leadToImport.external_id;
+    contactToImport.traits.email = contactIdent.email;
 
     return contactToImport;
   }
