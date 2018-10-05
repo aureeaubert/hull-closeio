@@ -251,6 +251,11 @@ class SyncAgent {
               value: "status_id",
               label: "Status"
             });
+
+            defaultFields.push({
+              value: "addresses",
+              label: "Addresses"
+            });
           }
           const opts = _.concat(defaultFields, customFields);
           return opts;

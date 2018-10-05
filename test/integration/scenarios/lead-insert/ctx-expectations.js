@@ -17,18 +17,14 @@ module.exports = ctxMock => {
     "name": { operation: "setIfNull", value: _.get(acctData, "name") },
     "closeio/status": { operation: "set", value: "Potential" },
     "closeio/url": { operation: "set", value: _.get(acctData, "domain") },
-    "closeio/description": {
-      operation: "set",
-      value: _.get(apiResponse, "description")
-    },
-    "closeio/created_at": {
-      operation: "setIfNull",
-      value: "2013-02-20T05:30:24.854000+00:00"
-    },
-    "closeio/updated_at": {
-      operation: "set",
-      value: "2013-02-20T05:30:24.854000+00:00"
-    }
+    "closeio/address_city": { operation: "set", value: _.get(apiResponse, "addresses[0].city") },
+    "closeio/address_country": { operation: "set", value: _.get(apiResponse, "addresses[0].country") },
+    "closeio/address_state": { operation: "set", value: _.get(apiResponse, "addresses[0].state") },
+    "closeio/address_street": { operation: "set", value: _.get(apiResponse, "addresses[0].address_1") },
+    "closeio/address_zipcode": { operation: "set", value: _.get(apiResponse, "addresses[0].zipcode") },
+    "closeio/description": { operation: "set", value: _.get(apiResponse, "description") },
+    "closeio/created_at": { operation: "setIfNull", value: "2013-02-20T05:30:24.854000+00:00" },
+    "closeio/updated_at": { operation: "set", value: "2013-02-20T05:30:24.854000+00:00" }
   };
 
   expect(ctxMock.client.traits.mock.calls[0][0]).toEqual(acctTraits);

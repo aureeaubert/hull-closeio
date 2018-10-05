@@ -335,13 +335,15 @@ class MappingUtil {
               const addresses = _.get(serviceObject, m, []);
               if (addresses.length > 0) {
                 const addressData = addresses[0];
-                const attribPrefix = `closeio/address_${_.get(
-                  addressData,
-                  "label",
-                  "office"
-                )}`;
+                const attribPrefix = "closeio/address";
+
+                hullAttrs[`${attribPrefix}_street`] = {
+                  value: _.get(addressData, "address_1"),
+                  operation: "set"
+                };
+
                 _.forIn(addressData, (v, k) => {
-                  if (k !== "label") {
+                  if (k !== "label" && !k.includes("address")) {
                     hullAttrs[`${attribPrefix}_${k}`] = {
                       value: v,
                       operation: "set"
