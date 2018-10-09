@@ -250,6 +250,12 @@ class SyncAgent {
             defaultFields.push({
               value: "status_id",
               label: "Status"
+            }, {
+              value: "last_communication_user_id",
+              label: "Last Communication User ID"
+            }, {
+              value: "last_communication_date",
+              label: "Last Communication Date"
             });
           }
           const opts = _.concat(defaultFields, customFields);
@@ -379,8 +385,11 @@ class SyncAgent {
       this.hullClient.logger.info("incoming.job.progress", {
         leads: leads.length
       });
+
       return Promise.all(
-        leads.map(lead => {
+        leads.map(async lead => {
+          lead.last_email_sent = await this.getLeadLastestEmailSent(lead.id);
+          
           const hullAccountIdent = this.mappingUtil.mapLeadToHullAccountIdent(
             lead
           );
@@ -619,6 +628,9 @@ class SyncAgent {
           if (updatedEnvelope.error !== null) {
             throw new Error(updatedEnvelope.error);
           }
+        
+          updatedEnvelope.cioLeadRead.last_email_sent = await this.getLeadLastestEmailSent(updatedEnvelope.cioLeadRead.id);
+
           await this.hullClient
             .asAccount(updatedEnvelope.message.account)
             .traits(
@@ -792,6 +804,23 @@ class SyncAgent {
         this.hullClient.logger.info("incoming.job.error", error);
       });
   }
+
+  async getLeadLastestEmailSent(leadId: string): Promise<CioEmailRead> {
+    const inboundAttrs = this.normalizedPrivateSettings.lead_attributes_inbound;
+
+    if (
+      !_.includes(inboundAttrs, "last_communication_user_id")
+      && !_.includes(inboundAttrs, "last_communication_date")
+    ) {
+      return {};
+    }
+
+    const leadLatestEmails = (await this.serviceClient.getLeadEmails(leadId)).data;
+    
+    return _.get(_.reject(leadLatestEmails, ['date_sent', null]), "[0]", {});
+  }
+
+
 
   /**
    * Checks whether the API key is provided at all and hypothetically valid.

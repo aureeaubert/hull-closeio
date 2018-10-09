@@ -1,0 +1,184 @@
+{
+    "has_more": true,
+    "data": [
+        {
+            "body_preview": "qwerty",
+            "need_smtp_credentials": false,
+            "in_reply_to_id": null,
+            "body_text": "qwerty",
+            "date_updated": "2018-06-12T07:27:14.149000+00:00",
+            "template_name": null,
+            "direction": "incoming",
+            "contact_id": "cont_1234",
+            "thread_id": "acti_1234",
+            "references": [],
+            "message_ids": [],
+            "subject": "qwerty",
+            "user_id": "user_1234",
+            "to": [
+                "bob@spendesk.com"
+            ],
+            "created_by": null,
+            "id": "acti_LaMnFJx79DS9hevFTWmOCMWHkty8M1KvGhyPA5mLnCr",
+            "updated_by_name": null,
+            "created_by_name": null,
+            "user_name": "Clémentine Platel-Paris",
+            "opens": [],
+            "status": "inbox",
+            "_type": "Email",
+            "updated_by": null,
+            "sequence_name": null,
+            "body_html_quoted": [
+                {
+                    "html": "qwerty",
+                    "expand": true
+                }
+            ],
+            "envelope": {
+                "is_autoreply": false,
+                "from": [
+                    {
+                        "email": "michel@test.com",
+                        "name": ""
+                    }
+                ],
+                "sender": [
+                    {
+                        "email": "michel@test.com",
+                        "name": ""
+                    }
+                ],
+                "cc": [],
+                "bcc": [],
+                "to": [
+                    {
+                        "email": "bob@spendesk.com",
+                        "name": ""
+                    }
+                ],
+                "date": "Tue, 12 Jun 2018 09:26:56 +0200",
+                "reply_to": [],
+                "in_reply_to": "",
+                "message_id": "",
+                "subject": "qwerty"
+            },
+            "body_html": "qwerty",    
+            "organization_id": "orga_1234",
+            "sequence_id": null,
+            "sequence_subscription_id": null,
+            "users": [],
+            "body_text_quoted": [
+                {
+                    "text": "qwerty",
+                    "expand": true
+                }
+            ],
+            "send_attempts": [],
+            "sender": "michel@test.com",
+            "has_reply": false,
+            "lead_id": "lead_1234",
+            "bcc": [],
+            "attachments": [],
+            "email_account_id": "emailacct_1234",
+            "date_sent": null,
+            "date_created": "2018-06-12T07:26:56+00:00",
+            "date_scheduled": null,
+            "template_id": null,
+            "cc": [],
+            "opens_summary": null
+        },
+        {
+            "body_preview": "qwerty",
+            "need_smtp_credentials": false,
+            "in_reply_to_id": null,
+            "body_text": "qwerty",
+            "date_updated": "2018-06-12T07:35:22.090000+00:00",
+            "template_name": null,
+            "direction": "outgoing",
+            "contact_id": "cont_1234",
+            "thread_id": "acti_1234",
+            "references": [],
+            "message_ids": [],
+            "subject": "Test <> Spendesk",
+            "user_id": "user_1234",
+            "to": [
+                "michel@test.com"
+            ],
+            "created_by": "user_1234",
+            "id": "acti_1234",
+            "updated_by_name": "Bob",
+            "created_by_name": "Bob",
+            "user_name": "Bob",
+            "opens": [
+                {
+                    "opened_by": "michel@test.com",
+                    "opened_at": "2018-06-04T07:57:56.074000+00:00",
+                    "ip_address": "127.0.0.1",
+                    "user_agent": "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 10.0; WOW64; Trident/7.0; .NET4.0C; .NET4.0E; .NET CLR 2.0.50727; .NET CLR 3.0.30729; .NET CLR 3.5.30729; Microsoft Outlook 16.0.9226; ms-office; MSOffice 16)"
+                }
+            ],
+            "status": "sent",
+            "_type": "Email",
+            "updated_by": "user_1234",
+            "sequence_name": null,
+            "body_html_quoted": [
+                {
+                    "html": "qwerty",
+                    "expand": true
+                }
+            ],
+            "envelope": {
+                "is_autoreply": false,
+                "from": [
+                    {
+                        "email": "bob@spendesk.com",
+                        "name": "Bob"
+                    }
+                ],
+                "sender": [
+                    {
+                        "email": "bob@spendesk.com",
+                        "name": "Bob"
+                    }
+                ],
+                "cc": [],
+                "bcc": [],
+                "to": [
+                    {
+                        "email": "michel@test.com",
+                        "name": ""
+                    }
+                ],
+                "date": "Mon, 04 Jun 2018 07:44:36 +0000",
+                "reply_to": [],
+                "in_reply_to": null,
+                "message_id": "",
+                "subject": "Test <> Spendesk"
+            },
+            "body_html": "qwerty",
+            "organization_id": "orga_1234",
+            "sequence_id": null,
+            "sequence_subscription_id": null,
+            "users": [],
+            "body_text_quoted": [
+                {
+                    "text": "qwerty",
+                    "expand": true
+                }
+            ],
+            "send_attempts": [],
+            "sender": "Bob <bob@spendesk.com>",
+            "has_reply": true,
+            "lead_id": "lead_1234",
+            "bcc": [],
+            "attachments": [],
+            "email_account_id": "emailacct_1234",
+            "date_sent": "2018-06-04T07:44:38.875000+00:00",
+            "date_created": "2018-06-04T07:43:13.628000+00:00",
+            "date_scheduled": null,
+            "template_id": null,
+            "cc": [],
+            "opens_summary": "Opened by michel@test.com (5+ times, latest 2018-06-12)"
+        }
+    ]
+}

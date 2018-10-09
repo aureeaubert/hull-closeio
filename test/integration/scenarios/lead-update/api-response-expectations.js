@@ -2,6 +2,7 @@ const _ = require("lodash");
 const payload = require("../../fixtures/api-responses/lead-put.json");
 const payloadStatus = require("../../fixtures/api-responses/list-leadstatus.json");
 const payloadFields = require("../../fixtures/api-responses/list-leadfields.json");
+const payloadEmail = require("../../fixtures/api-responses/activity-email-get.json");
 
 module.exports = nock => {
   const respPayload = _.cloneDeep(payload);
@@ -20,4 +21,8 @@ module.exports = nock => {
   nock("https://app.close.io/")
     .get(/\/api\/v1\/custom_fields\/lead\//)
     .reply(200, payloadFields);
+  
+  nock("https://app.close.io/")
+    .get(/\/api\/v1\/activity\/email\//)
+    .reply(200, payloadEmail);
 };
