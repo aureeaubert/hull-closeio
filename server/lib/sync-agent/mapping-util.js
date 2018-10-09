@@ -17,6 +17,7 @@ import type {
   CioOutboundMapping,
   CioMappingUtilSettings,
   CioLeadStatus,
+  CioEmailRead,
   CioLeadCustomField,
   AccountUpdateEnvelope,
   UserUpdateEnvelope
@@ -326,6 +327,22 @@ class MappingUtil {
                   operation: "set"
                 };
               }
+            }
+            break;
+          case "last_communication_user_id":
+            if (!_.isNil(serviceObject.last_email_sent)) {
+              hullAttrs["closeio/last_communication_user_id"] = {
+                value: serviceObject.last_email_sent.user_id,
+                operation: "set"
+              };
+            }
+            break;
+          case "last_communication_date":
+            if (!_.isNil(serviceObject.last_email_sent)) {
+              hullAttrs["closeio/last_communication_date"] = {
+                value: serviceObject.last_email_sent.date_sent,
+                operation: "set"
+              };
             }
             break;
           case "addresses":

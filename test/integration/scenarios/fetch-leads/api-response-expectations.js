@@ -2,6 +2,7 @@ const _ = require("lodash");
 const payloadLeads = require("../../fixtures/api-responses/list-leads.json");
 const payloadStatus = require("../../fixtures/api-responses/list-leadstatus.json");
 const payloadFields = require("../../fixtures/api-responses/list-leadfields.json");
+const payloadEmail = require("../../fixtures/api-responses/activity-email-get.json");
 
 module.exports = nock => {
   nock("https://app.close.io/")
@@ -20,4 +21,8 @@ module.exports = nock => {
       _skip: 0
     })
     .reply(200, payloadLeads);
+  
+  nock("https://app.close.io/")
+    .get(/\/api\/v1\/activity\/email\//)
+    .reply(200, payloadEmail);
 };

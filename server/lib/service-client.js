@@ -188,6 +188,31 @@ class ServiceClient {
   }
 
   /**
+   * Lists of emails history of a lead
+   *
+   * @param {string} leadId The query to narrow down the results.
+   * @returns {Promise<CioListResponse<CioEmailRead>>} The list response.
+   * @memberof ServiceClient
+   */
+  getLeadEmails(leadId: String): Promise<CioListResponse<CioEmailRead>> {
+    if (!this.hasValidApiKey()) {
+      return Promise.reject(
+        new ConfigurationError("No API key specified in the Settings", {})
+      );
+    }
+
+    return this.agent.get("/activity/email/").query({
+      lead_id: leadId
+    }).then(response => { 
+      return response.body; 
+    }).catch(error => {
+      return Promise.reject(
+        new Error(error.response.body, {})
+      )
+    });
+  }
+
+  /**
    * Creates a new lead in close.io.
    *
    * @param {CioLead} data The close.io object data.
