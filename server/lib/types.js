@@ -203,6 +203,7 @@ export type CioLeadRead = {
   tasks: Array<any>,
   display_name: string,
   addresses: Array<CioAddress>,
+  last_email_sent: CioEmailRead,
   name: string,
   date_updated: Date,
   html_url: string,
@@ -232,6 +233,11 @@ export type CioContactRead = {
   title: string,
   phones: Array<CioPhone>,
   emails: Array<CioEmail>
+};
+
+export type CioEmailRead = {
+  date_sent: Date | null,
+  user_id: string
 };
 
 export type FilterResults<T> = {

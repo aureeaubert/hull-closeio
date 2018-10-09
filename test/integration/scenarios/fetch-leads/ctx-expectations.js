@@ -76,6 +76,10 @@ module.exports = ctxMock => {
     "closeio/updated_at": {
       value: leadData.date_updated,
       operation: "set"
+    },
+    "closeio/last_communication_user_id": {
+      operation: "set",
+      value: "user_1234"
     }
   };
   expect(ctxMock.client.asAccount.mock.calls[0]).toEqual([expectedAccountIdent]);
