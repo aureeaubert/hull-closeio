@@ -28,6 +28,54 @@ module.exports = ctxMock => {
     "closeio/updated_at": {
       operation: "set",
       value: "2013-02-20T05:30:24.854000+00:00"
+    },
+    "closeio/address_office_address_1": {
+      operation: "set",
+      value: "747 Howard St"
+    },
+    "closeio/address_office_address_2": {
+      operation: "set",
+      value: "Room 3"
+    },
+    "closeio/address_office_city": {
+      operation: "set",
+      value: "San Francisco"
+    },
+    "closeio/address_office_country": {
+      operation: "set",
+      value: "US"
+    },
+    "closeio/address_office_state": {
+      operation: "set",
+      value: "CA"
+    },
+    "closeio/address_office_zipcode": {
+      operation: "set",
+      value: "94103"
+    },
+    "closeio/address_business_address_1": {
+      operation: "set",
+      value: "567 Another Street"
+    },
+    "closeio/address_business_address_2": {
+      operation: "set",
+      value: "Suite 32"
+    },
+    "closeio/address_business_city": {
+      operation: "set",
+      value: "San Antonio"
+    },
+    "closeio/address_business_country": {
+      operation: "set",
+      value: "US"
+    },
+    "closeio/address_business_state": {
+      operation: "set",
+      value: "TX"
+    },
+    "closeio/address_business_zipcode": {
+      operation: "set",
+      value: "78268"
     }
   };
 

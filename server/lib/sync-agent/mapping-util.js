@@ -342,17 +342,23 @@ class MappingUtil {
             }
             break;
           case "addresses":
-            // Multiple addresses are not supported,
-            // we only store the first one
             if (_.has(serviceObject, m)) {
               const addresses = _.get(serviceObject, m, []);
-              if (addresses.length > 0) {
-                const addressData = addresses[0];
-                const attribPrefix = `closeio/address_${_.get(
-                  addressData,
-                  "label",
-                  "office"
-                )}`;
+              const processedLabels = [];
+              // Loop through the addresses putting the pieces into attributes
+              _.forEach(addresses, addressData => {
+                const thisLabel = _.get(addressData, "label", "office");
+
+                // Do not store more 1 type of address
+                // this is a known issue with the current approach
+                // https://github.com/hull/hull-connectors-issues/issues/78
+                if (processedLabels.includes(thisLabel)) {
+                  return;
+                }
+
+                processedLabels.push(thisLabel);
+
+                const attribPrefix = `closeio/address_${thisLabel}`;
                 _.forIn(addressData, (v, k) => {
                   if (k !== "label") {
                     hullAttrs[`${attribPrefix}_${k}`] = {
@@ -361,7 +367,7 @@ class MappingUtil {
                     };
                   }
                 });
-              }
+              });
             }
             break;
           case "opportunities":

@@ -260,6 +260,10 @@ class SyncAgent {
               value: "last_communication_date",
               label: "Last Communication Date"
             });
+            defaultFields.push({
+              value: "addresses",
+              label: "Addresses"
+            });
           }
           const opts = _.concat(defaultFields, customFields);
           return opts;

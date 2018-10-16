@@ -11,7 +11,24 @@
           "state": "CA",
           "zipcode": "94103",
           "country": "US"
-      }
+      },
+      {
+        "address_1": "123 Nowhere St",
+        "address_2": "Suite 5000",
+        "city": "Atlanta",
+        "state": "GA",
+        "zipcode": "30318",
+        "country": "US"
+    },
+    {
+        "address_1": "567 Another Street",
+        "address_2": "Suite 32",
+        "city": "San Antonio",
+        "state": "TX",
+        "zipcode": "78268",
+        "label": "business",
+        "country": "US"
+    }
   ],
   "name": "Bluth Company",
   "contacts": [
