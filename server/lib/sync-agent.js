@@ -254,6 +254,9 @@ class SyncAgent {
               value: "last_communication_user_id",
               label: "Last Communication User ID"
             }, {
+              value: "last_communication_user_name",
+              label: "Last Communication User Name"
+            }, {
               value: "last_communication_date",
               label: "Last Communication Date"
             });
@@ -810,6 +813,7 @@ class SyncAgent {
 
     if (
       !_.includes(inboundAttrs, "last_communication_user_id")
+      && !_.includes(inboundAttrs, "last_communication_user_name")
       && !_.includes(inboundAttrs, "last_communication_date")
     ) {
       return {};

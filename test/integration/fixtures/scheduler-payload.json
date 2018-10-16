@@ -52,7 +52,8 @@
                 "custom.lcf_mkbFfv07cYOrAofO8djKprdEm3uGUxYTm8qtPdL9MXf",
                 "description",
                 "url",
-                "last_communication_user_id"
+                "last_communication_user_id",
+                "last_communication_user_name"
             ],
             "contact_attributes_inbound": [
                 "title",

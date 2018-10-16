@@ -330,17 +330,13 @@ class MappingUtil {
             }
             break;
           case "last_communication_user_id":
-            if (!_.isNil(serviceObject.last_email_sent)) {
-              hullAttrs["closeio/last_communication_user_id"] = {
-                value: serviceObject.last_email_sent.user_id,
-                operation: "set"
-              };
-            }
-            break;
+          case "last_communication_user_name":
           case "last_communication_date":
             if (!_.isNil(serviceObject.last_email_sent)) {
-              hullAttrs["closeio/last_communication_date"] = {
-                value: serviceObject.last_email_sent.date_sent,
+              const key = _.get(m.match(/user_.*/), "[0]", "date_sent");
+
+              hullAttrs[`closeio/${m}`] = {
+                value: serviceObject.last_email_sent[key],
                 operation: "set"
               };
             }

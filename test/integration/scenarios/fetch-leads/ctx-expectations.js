@@ -80,6 +80,10 @@ module.exports = ctxMock => {
     "closeio/last_communication_user_id": {
       operation: "set",
       value: "user_1234"
+    },
+    "closeio/last_communication_user_name": {
+      operation: "set",
+      value: "Bob"
     }
   };
   expect(ctxMock.client.asAccount.mock.calls[0]).toEqual([expectedAccountIdent]);

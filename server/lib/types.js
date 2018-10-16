@@ -237,7 +237,8 @@ export type CioContactRead = {
 
 export type CioEmailRead = {
   date_sent: Date | null,
-  user_id: string
+  user_id: string,
+  user_name: string
 };
 
 export type FilterResults<T> = {

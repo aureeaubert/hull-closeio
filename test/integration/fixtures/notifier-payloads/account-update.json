@@ -53,7 +53,8 @@
                 "description",
                 "url",
                 "status_id",
-                "last_communication_user_id"
+                "last_communication_user_id",
+                "last_communication_user_name"
             ],
             "contact_attributes_inbound": [
                 "title",
