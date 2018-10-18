@@ -214,6 +214,7 @@ export type CioLeadRead = {
   updated_by: string,
   date_created: string,
   description: string,
+  contacts: Array<CioContactRead>, 
   [string]: CioCustomFieldType
 };
 
@@ -232,7 +233,9 @@ export type CioContactRead = {
   name: string,
   title: string,
   phones: Array<CioPhone>,
-  emails: Array<CioEmail>
+  emails: Array<CioEmail>,
+  date_created?: Date,
+  date_updated?: Date,
 };
 
 export type CioEmailRead = {
