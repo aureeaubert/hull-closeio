@@ -127,6 +127,14 @@ module.exports = ctxMock => {
     "closeio/lead_id": {
       value: firstContactData.lead_id,
       operation: "set"
+    },
+    "closeio/created_at": {
+      value: "2018-06-11T15:17:07.177000+00:00",
+      operation: "setIfNull"
+    },
+    "closeio/updated_at": {
+      value: "2018-06-12T12:14:38.696000+00:00",
+      operation: "set"
     }
   };
   expect(ctxMock.client.traits.mock.calls[1]).toEqual([firstUserTraits]);

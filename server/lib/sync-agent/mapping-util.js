@@ -289,7 +289,16 @@ class MappingUtil {
     }
 
     hObject["closeio/lead_id"] = {
-      value: _.get(contact, "lead_id"),
+      value: contact.lead_id,
+      operation: "set"
+    };
+
+    hObject["closeio/created_at"] = {
+      value: contact.date_created,
+      operation: "setIfNull"
+    };
+    hObject["closeio/updated_at"] = {
+      value: contact.date_updated,
       operation: "set"
     };
 
