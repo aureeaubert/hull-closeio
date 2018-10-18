@@ -22,6 +22,14 @@ module.exports = ctxMock => {
     "closeio/lead_id": {
       operation: "set",
       value: "lead_QyNaWw4fdSwxl5Mc5daMFf3Y27PpIcH0awPbC9l7uyo"
+    },
+    "closeio/created_at": { 
+      operation: "setIfNull",
+      value: "2013-03-07T23:23:21.495000+00:00"
+    },
+    "closeio/updated_at": {
+      operation: "set",
+      value: "2013-03-07T23:23:21.495000+00:00"
     }
   };
 

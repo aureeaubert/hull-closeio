@@ -12,6 +12,7 @@ import type {
   CioLeadRead,
   CioContactWrite,
   CioContactRead,
+  CioEmailRead,
   CioServiceClientConfiguration,
   SuperAgentResponse
 } from "./types";
