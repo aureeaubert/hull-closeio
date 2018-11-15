@@ -196,6 +196,35 @@ export type CioLeadWrite = {
   [string]: CioCustomFieldType
 };
 
+export type CioLeadOpportunityRead = {
+  date_updated: string,
+  created_by_name: string,
+  value_currency: string,
+  contact_id: string,
+  lead_name: string,
+  contact_name: string,
+  id: string,
+  confidence: number,
+  user_id: string,
+  value_period: string,
+  created_by: string,
+  note: string,
+  updated_by_name: string,
+  user_name: string,
+  status_type: string,
+  updated_by: string,
+  status_id: string,
+  value_formatted: string,
+  organization_id: string,
+  integration_links: Array<string>,
+  date_won: string,
+  lead_id: string,
+  date_lost: null,
+  value: number,
+  status_label: string,
+  date_created: string
+}
+
 export type CioLeadRead = {
   id: string,
   status_id: string,
@@ -215,6 +244,7 @@ export type CioLeadRead = {
   date_created: string,
   description: string,
   contacts: Array<CioContactRead>, 
+  opportunities: Array<CioLeadOpportunityRead>,
   [string]: CioCustomFieldType
 };
 

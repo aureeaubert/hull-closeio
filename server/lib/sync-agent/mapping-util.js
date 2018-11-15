@@ -350,6 +350,19 @@ class MappingUtil {
               };
             }
             break;
+          case "opportunity_user_id":
+          case "opportunity_user_name":
+          case "opportunity_confidence":
+          case "opportunity_status_label":
+            if (_.get(serviceObject, "opportunities[0]")) {
+              const key = m.match(/user_.*/)[0];
+
+              hullAttrs[`closeio/${m}`] = {
+                value: serviceObject.opportunities[0][key],
+                operation: "set"
+              };
+            }
+            break;
           case "addresses":
             if (_.has(serviceObject, m)) {
               const addresses = _.get(serviceObject, m, []);

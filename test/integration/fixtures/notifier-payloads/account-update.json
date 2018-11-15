@@ -55,7 +55,9 @@
                 "url",
                 "status_id",
                 "last_communication_user_id",
-                "last_communication_user_name"
+                "last_communication_user_name",
+                "opportunity_user_id",
+                "opportunity_user_name"
             ],
             "contact_attributes_inbound": [
                 "title",

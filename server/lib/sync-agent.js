@@ -260,6 +260,18 @@ class SyncAgent {
               value: "last_communication_date",
               label: "Last Communication Date"
             }, {
+              value: "opportunity_user_id",
+              label: "Opportunity User ID"
+            }, {
+              value: "opportunity_user_name",
+              label: "Opportunity User Name"
+            }, {
+              value: "opportunity_confidence",
+              label: "Opportunity Confidence"
+            }, {
+              value: "opportunity_status_label",
+              label: "Opportunity Status Label"
+            }, {
               value: "addresses",
               label: "Addresses"
             });
