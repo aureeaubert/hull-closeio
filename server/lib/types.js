@@ -256,7 +256,6 @@ export type UserUpdateEnvelope = {
   hullUser: HullUser, // an object taken from message.user but we need to mix in `account` property there
   cioContactWrite: CioContactWrite, // the contact object we want to use to write to API
   cioContactRead: CioContactRead | null, // the contact object we have received from the API
-  cachedCioContactReadId: string | null,
   skipReason: string | null,
   error: string | null
 };
@@ -266,14 +265,14 @@ export type AccountUpdateEnvelope = {
   hullAccount: HullAccount, // an object taken from message, to make it work the same as for UserUpdateEnvelope
   cioLeadWrite: CioLeadWrite,
   cioLeadRead: CioLeadRead | null,
-  cachedCioLeadReadId: string | null,
   skipReason: string | null,
   error: string | null
 };
 
 export type FilterUtilConfiguration = {
   synchronizedAccountSegments: Array<string>,
-  leadIdentifierHull: string
+  leadIdentifierHull: string,
+  cache: Object
 };
 
 export type CioServiceClientConfiguration = {
@@ -316,7 +315,6 @@ export type CioContactFieldDefinition = {
 
 export type CioMappingUtilSettings = {
   attributeMappings: CioAttributesMapping,
-  leadCreationStatusId: string,
   leadStatuses: Array<CioLeadStatus>,
   leadCustomFields: Array<CioLeadCustomField>,
   leadIdentifierHull: string,

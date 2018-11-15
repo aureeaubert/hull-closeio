@@ -130,7 +130,8 @@ class SyncAgent {
     const configFilterUtil: FilterUtilConfiguration = {
       synchronizedAccountSegments: this.normalizedPrivateSettings
         .synchronized_account_segments,
-      leadIdentifierHull: this.normalizedPrivateSettings.lead_identifier_hull
+      leadIdentifierHull: this.normalizedPrivateSettings.lead_identifier_hull,
+      cache: this.cache
     };
     this.filterUtil = new FilterUtil(configFilterUtil);
 
@@ -179,7 +180,6 @@ class SyncAgent {
         "contact_attributes_outbound",
         "contact_attributes_inbound"
       ]),
-      leadCreationStatusId: this.normalizedPrivateSettings.lead_status,
       leadStatuses,
       leadCustomFields,
       leadIdentifierHull: this.normalizedPrivateSettings.lead_identifier_hull,
@@ -288,7 +288,6 @@ class SyncAgent {
   normalizeSettings(settings: CioConnectorSettings): CioConnectorSettings {
     const hullId = _.get(settings, "lead_identifier_hull", "domain");
     const svcId = _.get(settings, "lead_identifier_service", "url");
-    const leadStatus = _.get(settings, "lead_status", "N/A");
     const leadAttribsOut: Array<CioOutboundMapping> = _.get(
       settings,
       "lead_attributes_outbound",
@@ -321,7 +320,6 @@ class SyncAgent {
     finalSettings.lead_attributes_inbound = leadAttribsIn;
     finalSettings.lead_identifier_hull = hullId;
     finalSettings.lead_identifier_service = svcId;
-    finalSettings.lead_status = leadStatus;
 
     return finalSettings;
   }
@@ -469,16 +467,14 @@ class SyncAgent {
     const combinedUser = _.cloneDeep(message.user);
     combinedUser.account = _.cloneDeep(message.account);
 
-    const cachedCioContactReadId = await this.cache.get(message.user.id);
     const envelope = {};
     envelope.message = message;
     envelope.hullUser = combinedUser;
     envelope.cioContactRead = null;
-    envelope.cachedCioContactReadId = cachedCioContactReadId || null;
     envelope.skipReason = null;
     envelope.error = null;
-
     envelope.cioContactWrite = this.mappingUtil.mapHullUserToContact(envelope);
+
     return envelope;
   }
 
@@ -499,7 +495,7 @@ class SyncAgent {
     const envelopes = await Promise.all(
       deduplicatedMessages.map(message => this.buildUserUpdateEnvelope(message))
     );
-    const filterResults = this.filterUtil.filterUsers(envelopes);
+    const filterResults = await this.filterUtil.filterUsers(envelopes);
 
     filterResults.toSkip.forEach(envelope => {
       this.hullClient
@@ -556,7 +552,7 @@ class SyncAgent {
               this.mappingUtil.mapContactToHullUserAttributes(combinedContact)
             );
           await this.cache.set(
-            insertedEnvelope.message.id,
+            insertedEnvelope.hullUser.id,
             insertedEnvelope.cioContactRead.id
           );
           return this.hullClient
@@ -584,16 +580,14 @@ class SyncAgent {
   async buildAccountUpdateEnvelope(
     message: THullAccountUpdateMessage
   ): Promise<AccountUpdateEnvelope> {
-    const cachedCioLeadReadId = await this.cache.get(message.id);
     const envelope = {};
     envelope.message = message;
     envelope.hullAccount = _.cloneDeep(message.account);
-    envelope.cachedCioLeadReadId = cachedCioLeadReadId || null;
     envelope.cioLeadRead = null;
     envelope.skipReason = null;
     envelope.error = null;
-
     envelope.cioLeadWrite = this.mappingUtil.mapHullAccountToLead(envelope);
+
     return envelope;
   }
 
@@ -616,7 +610,7 @@ class SyncAgent {
         this.buildAccountUpdateEnvelope(message)
       )
     );
-    const filterResults = this.filterUtil.filterAccounts(envelopes);
+    const filterResults = await this.filterUtil.filterAccounts(envelopes);
 
     filterResults.toSkip.forEach(envelope => {
       this.hullClient
@@ -676,7 +670,7 @@ class SyncAgent {
               )
             );
           await this.cache.set(
-            insertedEnvelope.message.id,
+            insertedEnvelope.hullAccount.id,
             insertedEnvelope.cioLeadRead.id
           );
           return this.hullClient
