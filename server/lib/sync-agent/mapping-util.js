@@ -36,15 +36,6 @@ class MappingUtil {
    */
   attributeMappings: CioAttributesMapping;
 
-  /**
-   * Gets or sets the identifier for the lead creation status.
-   * Set to "N/A" if default status shall be used.
-   *
-   * @type {string}
-   * @memberof MappingUtil
-   */
-  leadCreationStatusId: string;
-
   leadStatuses: Array<CioLeadStatus>;
 
   leadCustomFields: Array<CioLeadCustomField>;
@@ -59,7 +50,6 @@ class MappingUtil {
    */
   constructor(settings: CioMappingUtilSettings) {
     this.attributeMappings = settings.attributeMappings;
-    this.leadCreationStatusId = settings.leadCreationStatusId;
     this.leadStatuses = settings.leadStatuses;
     this.leadCustomFields = settings.leadCustomFields;
     this.leadIdentifierHull = settings.leadIdentifierHull;
@@ -73,22 +63,7 @@ class MappingUtil {
     svcObject.name = hullObject.name;
     svcObject.url = hullObject.domain;
 
-    if (_.get(hullObject, "closeio/id", null) !== null) {
-      svcObject.id = hullObject["closeio/id"];
-    } else if (envelope.cachedCioLeadReadId !== null) {
-      svcObject.id = envelope.cachedCioLeadReadId;
-    } else if (
-      _.get(hullObject, "closeio/id", null) === null &&
-      this.leadCreationStatusId !== "N/A" &&
-      this.leadCreationStatusId !== "hull-default"
-    ) {
-      svcObject.status_id = this.leadCreationStatusId;
-    }
-    const customFields = this.mapCustomFields("Lead", hullObject, svcObject);
-    return {
-      ...svcObject,
-      ...customFields
-    };
+    return this.mapCustomFields("Lead", hullObject, svcObject);
   }
 
   mapHullUserToContact(envelope: UserUpdateEnvelope): CioContactWrite {
@@ -98,9 +73,6 @@ class MappingUtil {
     svcObject.name = hullObject.name;
     svcObject.lead_id = hullObject.account["closeio/id"] || null;
 
-    if (_.has(hullObject, "traits_closeio/id")) {
-      svcObject.id = hullObject["traits_closeio/id"];
-    }
     return this.mapCustomFields("Contact", hullObject, svcObject);
   }
 

@@ -30,7 +30,6 @@ describe("MappingUtil", () => {
 
     const util = new MappingUtil(settings);
     expect(util.attributeMappings).toEqual(settings.attributeMappings);
-    expect(util.leadCreationStatusId).toEqual(settings.leadCreationStatusId);
   });
 
   test("should map an account object to a lead", () => {

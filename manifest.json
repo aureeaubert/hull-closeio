@@ -46,16 +46,6 @@
       "title": "Whitelisted Segments"
     },
     {
-      "name": "lead_status",
-      "title": "The lead status to use for creating new leads. If set to None the default status will be applied by close.io",
-      "type": "string",
-      "format": "select",
-      "default": "hull-default",
-      "options": {
-        "loadOptions": "/leadstatuses"
-      }
-    },
-    {
       "name": "lead_identifier_hull",
       "title": "The attribute to uniquely identify an account in Hull",
       "type": "string",

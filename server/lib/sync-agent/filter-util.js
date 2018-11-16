@@ -8,6 +8,7 @@ import type {
 } from "../types";
 
 const _ = require("lodash");
+const Promise = require('bluebird');
 
 const SHARED_MESSAGES = require("../shared-messages");
 
@@ -28,6 +29,8 @@ class FilterUtil {
    */
   leadIdentifierHull: string;
 
+  cache: Object;
+
   /**
    *Creates an instance of FilterUtil.
    * @param {FilterUtilConfiguration} config The settings to configure the util with.
@@ -37,6 +40,7 @@ class FilterUtil {
     // Configure the util with sensible defaults
     this.synchronizedAccountSegments = config.synchronizedAccountSegments || [];
     this.leadIdentifierHull = config.leadIdentifierHull || "domain";
+    this.cache = config.cache;
   }
 
   /**
@@ -46,7 +50,7 @@ class FilterUtil {
    * @returns {FilterResults<UserUpdateEnvelope>} The filter result.
    * @memberof FilterUtil
    */
-  filterUsers(
+  async filterUsers(
     envelopes: Array<UserUpdateEnvelope>
   ): FilterResults<UserUpdateEnvelope> {
     const results: FilterResults<UserUpdateEnvelope> = {
@@ -55,7 +59,7 @@ class FilterUtil {
       toUpdate: []
     };
 
-    envelopes.forEach((envelope: UserUpdateEnvelope) => {
+    await Promise.each(envelopes, async (envelope: UserUpdateEnvelope) => {
       // Filter out users without lead
       if (
         envelope.cioContactWrite.lead_id === undefined ||
@@ -66,6 +70,7 @@ class FilterUtil {
         envelope.opsResult = "skip";
         return results.toSkip.push(envelope);
       }
+      
       // Filter users not linked to accounts that match whitelisted segments
       if (
         !this.matchesSynchronizedAccountSegments(
@@ -79,12 +84,16 @@ class FilterUtil {
         return results.toSkip.push(envelope);
       }
 
-      // Determine which contacts to update or create
-      if (_.get(envelope, "cioContactWrite.id", null) === null) {
-        return results.toInsert.push(envelope);
+      const cachedContactCioId = await this.cache.get(envelope.hullUser.id);
+      if (
+        _.has(envelope.hullUser, "traits_closeio/id")
+        || !_.isNil(cachedContactCioId)
+      ) {
+        envelope.cioContactWrite.id = envelope.hullUser["traits_closeio/id"] || cachedContactCioId;
+        return results.toUpdate.push(envelope);
       }
 
-      return results.toUpdate.push(envelope);
+      return results.toInsert.push(envelope);
     });
     return results;
   }
@@ -96,16 +105,16 @@ class FilterUtil {
    * @returns {FilterResults<AccountUpdateEnvelope>} The filter result.
    * @memberof FilterUtil
    */
-  filterAccounts(
+  async filterAccounts(
     envelopes: Array<AccountUpdateEnvelope>
-  ): FilterResults<AccountUpdateEnvelope> {
+  ): Promise<FilterResults<AccountUpdateEnvelope>> {
     const results: FilterResults<AccountUpdateEnvelope> = {
       toSkip: [],
       toInsert: [],
       toUpdate: []
     };
 
-    envelopes.forEach((envelope: AccountUpdateEnvelope) => {
+    await Promise.each(envelopes, async (envelope: AccountUpdateEnvelope) => {
       // Filter out all accounts that have no identifier in Hull
       if (_.isNil(envelope.hullAccount[this.leadIdentifierHull])) {
         const skipMsg = SHARED_MESSAGES.OPERATION_SKIP_NOLEADIDENT(
@@ -129,13 +138,18 @@ class FilterUtil {
         return results.toSkip.push(envelope);
       }
 
-      // Determine which leads to insert and which ones to update
-      if (_.isNil(envelope.cioLeadWrite && envelope.cioLeadWrite.id)) {
-        return results.toInsert.push(envelope);
+      const cachedCioLeadId = await this.cache.get(envelope.hullAccount.id);
+      if (
+        _.has(envelope.hullAccount, "closeio/id")
+        || !_.isNil(cachedCioLeadId)
+      ) {
+        envelope.cioLeadWrite.id = envelope.hullAccount["closeio/id"] || cachedCioLeadId;
+        return results.toUpdate.push(envelope);
       }
 
-      return results.toUpdate.push(envelope);
+      return results.toInsert.push(envelope);
     });
+
     return results;
   }
 
