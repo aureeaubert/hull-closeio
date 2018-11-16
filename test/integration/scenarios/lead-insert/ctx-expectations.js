@@ -76,6 +76,14 @@ module.exports = ctxMock => {
     "closeio/address_business_zipcode": {
       operation: "set",
       value: "78268"
+    },
+    "closeio/opportunity_user_id": {
+      operation: "set",
+      value: "user_1"
+    },
+    "closeio/opportunity_user_name": {
+      operation: "set",
+      value: "Bob"
     }
   };
 
