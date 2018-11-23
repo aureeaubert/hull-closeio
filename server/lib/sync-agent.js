@@ -392,7 +392,7 @@ class SyncAgent {
     const since = DateTime.fromMillis(lastSyncAtRaw * 1000).minus(
       safetyInterval
     );
-
+    
     this.hullClient.logger.info("incoming.job.start", { since: since.toISO() });
 
     const streamOfUpdatedLeads = this.serviceClient.getLeadsStream(since);

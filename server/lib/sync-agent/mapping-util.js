@@ -327,7 +327,7 @@ class MappingUtil {
           case "opportunity_confidence":
           case "opportunity_status_label":
             if (_.get(serviceObject, "opportunities[0]")) {
-              const key = m.match(/user_.*/)[0];
+              const key = m.match(/opportunity_(.*)/)[1];
 
               hullAttrs[`closeio/${m}`] = {
                 value: serviceObject.opportunities[0][key],
