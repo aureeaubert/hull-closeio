@@ -234,60 +234,58 @@ class SyncAgent {
       return Promise.resolve([]);
     }
 
-    return this.cache.wrap(`lead_custom_fields_${type}`, () => {
-      return this.serviceClient
-        .getLeadCustomFields()
-        .then(listResponse => {
-          const customFields = listResponse.body.data.map(f => {
-            return { value: `custom.${f.id}`, label: f.name };
-          });
-          const defaultFields: Array<HullFieldDropdownItem> = [
-            { value: "name", label: "Name" },
-            { value: "url", label: "Url" },
-            { value: "description", label: "Description" }
-          ];
-          if (type === "inbound") {
-            defaultFields.push({
-              value: "status_id",
-              label: "Status"
-            }, {
-              value: "last_communication_user_id",
-              label: "Last Communication User ID"
-            }, {
-              value: "last_communication_user_name",
-              label: "Last Communication User Name"
-            }, {
-              value: "last_communication_date",
-              label: "Last Communication Date"
-            }, {
-              value: "opportunity_user_id",
-              label: "Opportunity User ID"
-            }, {
-              value: "opportunity_user_name",
-              label: "Opportunity User Name"
-            }, {
-              value: "opportunity_confidence",
-              label: "Opportunity Confidence"
-            }, {
-              value: "opportunity_status_label",
-              label: "Opportunity Status Label"
-            }, {
-              value: "addresses",
-              label: "Addresses"
-            });
-          }
-          const opts = _.concat(defaultFields, customFields);
-          return opts;
-        })
-        .catch(err => {
-          this.hullClient.logger.error("connector.metadata.error", {
-            status: err.status,
-            message: err.message,
-            type: "/fields-lead"
-          });
-          return [];
+    return this.serviceClient
+      .getLeadCustomFields()
+      .then(listResponse => {
+        const customFields = listResponse.body.data.map(f => {
+          return { value: `custom.${f.id}`, label: f.name };
         });
-    });
+        const defaultFields: Array<HullFieldDropdownItem> = [
+          { value: "name", label: "Name" },
+          { value: "url", label: "Url" },
+          { value: "description", label: "Description" }
+        ];
+        if (type === "inbound") {
+          defaultFields.push({
+            value: "status_id",
+            label: "Status"
+          }, {
+            value: "last_communication_user_id",
+            label: "Last Communication User ID"
+          }, {
+            value: "last_communication_user_name",
+            label: "Last Communication User Name"
+          }, {
+            value: "last_communication_date",
+            label: "Last Communication Date"
+          }, {
+            value: "opportunity_user_id",
+            label: "Opportunity User ID"
+          }, {
+            value: "opportunity_user_name",
+            label: "Opportunity User Name"
+          }, {
+            value: "opportunity_confidence",
+            label: "Opportunity Confidence"
+          }, {
+            value: "opportunity_status_label",
+            label: "Opportunity Status Label"
+          }, {
+            value: "addresses",
+            label: "Addresses"
+          });
+        }
+        const opts = _.concat(defaultFields, customFields);
+        return opts;
+      })
+      .catch(err => {
+        this.hullClient.logger.error("connector.metadata.error", {
+          status: err.status,
+          message: err.message,
+          type: "/fields-lead"
+        });
+        return [];
+      });
   }
 
   /**
@@ -392,7 +390,7 @@ class SyncAgent {
     const since = DateTime.fromMillis(lastSyncAtRaw * 1000).minus(
       safetyInterval
     );
-    
+
     this.hullClient.logger.info("incoming.job.start", { since: since.toISO() });
 
     const streamOfUpdatedLeads = this.serviceClient.getLeadsStream(since);
@@ -448,7 +446,6 @@ class SyncAgent {
               );
             })
             .catch(error => {
-              console.log(error);
               asAccount.logger.error("incoming.account.error", error);
             });
         })
@@ -461,7 +458,6 @@ class SyncAgent {
       })
       .then(() => this.hullClient.logger.info("incoming.job.success"))
       .catch(error => {
-        console.log(error);
         this.hullClient.logger.error("incoming.job.error", { reason: error });
       });
   }
@@ -818,19 +814,23 @@ class SyncAgent {
   }
 
   async getLeadLastestEmailSent(leadId: string): Promise<CioEmailRead> {
-    const inboundAttrs = this.normalizedPrivateSettings.lead_attributes_inbound;
+    try {
+      const inboundAttrs = this.normalizedPrivateSettings.lead_attributes_inbound;
 
-    if (
-      !_.includes(inboundAttrs, "last_communication_user_id")
-      && !_.includes(inboundAttrs, "last_communication_user_name")
-      && !_.includes(inboundAttrs, "last_communication_date")
-    ) {
+      if (
+        !_.includes(inboundAttrs, "last_communication_user_id")
+        && !_.includes(inboundAttrs, "last_communication_user_name")
+        && !_.includes(inboundAttrs, "last_communication_date")
+      ) {
+        return {};
+      }
+
+      const leadLatestEmails = (await this.serviceClient.getLeadEmails(leadId)).data;
+      
+      return _.get(_.reject(leadLatestEmails, ['date_sent', null]), "[0]", {});
+    } catch (e) {
       return {};
     }
-
-    const leadLatestEmails = (await this.serviceClient.getLeadEmails(leadId)).data;
-    
-    return _.get(_.reject(leadLatestEmails, ['date_sent', null]), "[0]", {});
   }
 
 

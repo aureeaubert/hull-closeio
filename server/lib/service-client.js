@@ -148,7 +148,7 @@ class ServiceClient {
         new ConfigurationError("No API key specified in the Settings.", {})
       );
     }
-    debug("getLeads", query);
+
     return this.agent.get("/lead/").query({
       query,
       _limit: limit,
@@ -208,7 +208,7 @@ class ServiceClient {
       return response.body; 
     }).catch(error => {
       return Promise.reject(
-        new Error(error.response.body, {})
+        new Error("Get lead emails error")
       )
     });
   }
@@ -313,7 +313,7 @@ class ServiceClient {
    * List all custom fields for the organization.
    *
    * @param {number} [limit=100] The number of records per page.
-   * @param {number} [skip=0]The number of records to skip.
+   * @param {number} [skip=0] The number of records to skip.
    * @returns {Promise<CioListResponse<CioLeadCustomField>>} The list response.
    * @memberof ServiceClient
    */
