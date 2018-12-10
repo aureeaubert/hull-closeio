@@ -9,6 +9,7 @@ function accountUpdate(
   messages: Array<THullAccountUpdateMessage>
 ): Promise<*> {
   const syncAgent = new SyncAgent(ctx);
+
   return syncAgent.sendAccountMessages(messages).catch(err => {
     console.error(">>>> ERROR <<<<", err); // TODO: Add logger
   });

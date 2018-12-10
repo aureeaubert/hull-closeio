@@ -41,6 +41,18 @@ function server(app: $Application): $Application {
     })
   );
 
+  app.post(
+    "/batch-accounts",
+    batchHandler({
+      "account:update": {
+        callback: actions.accountUpdate,
+        options: {
+          maxSize: 200
+        }
+      }
+    })
+  );
+
   app.get(
     "/leadstatuses",
     cors(),
