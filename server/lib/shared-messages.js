@@ -57,6 +57,16 @@ const SHARED_MESSAGES = {
       category: "DataFlow"
     };
   },
+  OPERATION_SKIP_ACCOUNTDOESNTEXISTINCLOSEIO: () => {
+    return {
+      id: "OperationSkipAccountDoesntExistInCloseio",
+      message:
+        "The Hull account doesn't exist in closeio, we can't update it.",
+      level: "Information",
+      channel: "Operation",
+      category: "DataFlow"
+    };
+  },
   STATUS_ERROR_NOAPIKEY: () => {
     return {
       id: "StatusNoApiKeyConfigured",

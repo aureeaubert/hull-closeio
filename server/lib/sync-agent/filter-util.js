@@ -115,16 +115,6 @@ class FilterUtil {
     };
 
     await Promise.each(envelopes, async (envelope: AccountUpdateEnvelope) => {
-      // Filter out all accounts that have no identifier in Hull
-      if (_.isNil(envelope.hullAccount[this.leadIdentifierHull])) {
-        const skipMsg = SHARED_MESSAGES.OPERATION_SKIP_NOLEADIDENT(
-          this.leadIdentifierHull
-        );
-        envelope.skipReason = skipMsg.message;
-        envelope.opsResult = "skip";
-        return results.toSkip.push(envelope);
-      }
-
       // Filter out all accounts that do not match the whitelisted account segments
       if (
         !this.matchesSynchronizedAccountSegments(
@@ -147,7 +137,10 @@ class FilterUtil {
         return results.toUpdate.push(envelope);
       }
 
-      return results.toInsert.push(envelope);
+      const skipMsg = SHARED_MESSAGES.OPERATION_SKIP_ACCOUNTDOESNTEXISTINCLOSEIO();
+      envelope.skipReason = skipMsg.message;
+      envelope.opsResult = "skip";
+      return results.toSkip.push(envelope);
     });
 
     return results;
