@@ -67,6 +67,16 @@ const SHARED_MESSAGES = {
       category: "DataFlow"
     };
   },
+  OPERATION_SKIP_USERDOESNTEXISTINCLOSEIO: () => {
+    return {
+      id: "OperationSkipUserDoesntExistInCloseio",
+      message:
+        "The Hull user doesn't exist in closeio, we can't update it.",
+      level: "Information",
+      channel: "Operation",
+      category: "DataFlow"
+    };
+  },
   STATUS_ERROR_NOAPIKEY: () => {
     return {
       id: "StatusNoApiKeyConfigured",

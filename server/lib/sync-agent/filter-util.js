@@ -60,17 +60,6 @@ class FilterUtil {
     };
 
     await Promise.each(envelopes, async (envelope: UserUpdateEnvelope) => {
-      // Filter out users without lead
-      if (
-        envelope.cioContactWrite.lead_id === undefined ||
-        envelope.cioContactWrite.lead_id === null
-      ) {
-        const skipMsg = SHARED_MESSAGES.OPERATION_SKIP_NOLINKEDACCOUNT();
-        envelope.skipReason = skipMsg.message;
-        envelope.opsResult = "skip";
-        return results.toSkip.push(envelope);
-      }
-      
       // Filter users not linked to accounts that match whitelisted segments
       if (
         !this.matchesSynchronizedAccountSegments(
@@ -93,7 +82,10 @@ class FilterUtil {
         return results.toUpdate.push(envelope);
       }
 
-      return results.toInsert.push(envelope);
+      const skipMsg = SHARED_MESSAGES.OPERATION_SKIP_USERDOESNTEXISTINCLOSEIO();
+      envelope.skipReason = skipMsg.message;
+      envelope.opsResult = "skip";
+      return results.toSkip.push(envelope);
     });
     return results;
   }
