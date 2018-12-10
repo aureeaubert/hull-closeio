@@ -16,7 +16,7 @@ module.exports = nock => {
   nock("https://app.close.io")
     .get("/api/v1/lead/")
     .query({
-      query: "updated >= 2018-07-17",
+      query: "updated >= 2018-07-17T08:21:29",
       _limit: 100,
       _skip: 0
     })

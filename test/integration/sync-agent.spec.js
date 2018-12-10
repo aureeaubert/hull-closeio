@@ -26,7 +26,7 @@ describe("SyncAgent", () => {
   });
 
   describe("sendAccountMessages", () => {
-    const scenariosToRun = ["lead-insert", "lead-update"];
+    const scenariosToRun = ["lead-update"];
     scenariosToRun.forEach(scenarioName => {
       test(`${scenarioName}`, () => {
         const notifierPayload = require(`./scenarios/${scenarioName}/notifier-payload`)();
@@ -48,7 +48,7 @@ describe("SyncAgent", () => {
   });
 
   describe("sendUserMessages", () => {
-    const scenariosToRun = ["contact-insert"];
+    const scenariosToRun = [];
     scenariosToRun.forEach(scenarioName => {
       test(`${scenarioName}`, () => {
         const notifierPayload = require(`./scenarios/${scenarioName}/notifier-payload`)();

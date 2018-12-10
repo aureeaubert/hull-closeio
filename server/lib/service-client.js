@@ -163,8 +163,13 @@ class ServiceClient {
    * @memberof Agent
    */
   getLeadsStream(since: DateTime): Readable {
-    const updatedAfter = since.toISODate();
-    const q = `updated >= ${updatedAfter}`;
+    const utcSince = since.toUTC();
+    const updatedAfter = utcSince.toISODate();
+    const updatedAfterTime = utcSince.toLocaleString(
+      DateTime.TIME_24_WITH_SECONDS
+    );
+    const q = `updated >= ${updatedAfter}T${updatedAfterTime}`;
+
     return promiseToReadableStream(push => {
       return this.getLeads(q, 100, 0).then(res => {
         push(res.body.data);
