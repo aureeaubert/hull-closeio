@@ -451,12 +451,14 @@ class SyncAgent {
         })
       );
     })
-      .then(() => {
-        return this.settingsUpdate({
-          last_sync_at: Math.floor(DateTime.utc().toMillis() / 1000)
+      .then(async () => {
+        const new_last_sync_at = Math.floor(DateTime.utc().toMillis() / 1000);
+        await this.settingsUpdate({
+          last_sync_at: new_last_sync_at
         });
+
+        this.hullClient.logger.info("incoming.job.success", { last_sync_at: new_last_sync_at });
       })
-      .then(() => this.hullClient.logger.info("incoming.job.success"))
       .catch(error => {
         this.hullClient.logger.error("incoming.job.error", { reason: error });
       });
