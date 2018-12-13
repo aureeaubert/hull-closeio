@@ -59,9 +59,6 @@ class MappingUtil {
   mapHullAccountToLead(envelope: AccountUpdateEnvelope): CioLeadWrite {
     const hullObject = envelope.hullAccount;
     const svcObject: CioLeadWrite = {};
-    // Default properties
-    svcObject.name = hullObject.name;
-    svcObject.url = hullObject.domain;
 
     return this.mapCustomFields("Lead", hullObject, svcObject);
   }
@@ -69,9 +66,6 @@ class MappingUtil {
   mapHullUserToContact(envelope: UserUpdateEnvelope): CioContactWrite {
     const hullObject = envelope.hullUser;
     const svcObject: CioContactWrite = {};
-    // Default properties
-    svcObject.name = hullObject.name;
-    svcObject.lead_id = hullObject.account["closeio/id"] || null;
 
     return this.mapCustomFields("Contact", hullObject, svcObject);
   }
