@@ -209,12 +209,6 @@ class ServiceClient {
 
     return this.agent.get("/activity/email/").query({
       lead_id: leadId
-    }).then(response => { 
-      return response.body; 
-    }).catch(error => {
-      return Promise.reject(
-        new Error("Get lead emails error")
-      )
     });
   }
 
@@ -364,6 +358,16 @@ class ServiceClient {
     });
   }
 
+  getContact(id: string) {
+    if (!this.hasValidApiKey()) {
+      return Promise.reject(
+        new ConfigurationError("No API key specified in the Settings.", {})
+      );
+    }
+
+    return this.agent.get(`/contact/${id}`)
+  }
+
   /**
    * Create a new contact in close.io.
    *
@@ -429,7 +433,7 @@ class ServiceClient {
       envelopes.map(envelope => {
         const enrichedEnvelope = _.cloneDeep(envelope);
         return this.putContact(envelope.cioContactWrite)
-          .then(response => {
+          .then(async response => {
             // $FlowFixMe
             enrichedEnvelope.cioContactRead = response.body;
             return enrichedEnvelope;

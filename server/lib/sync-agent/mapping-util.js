@@ -93,18 +93,26 @@ class MappingUtil {
           _.startsWith(svcAttribName, "phones") ||
           _.startsWith(svcAttribName, "urls")
         ) {
+          let hullValues = [hullAttribValue]
+          if (_.isArray(hullAttribValue)) {
+            hullValues = hullAttribValue;
+          }
+
           const arrayAttribName = _.split(svcAttribName, ".")[0];
           const typeValue = _.split(svcAttribName, ".")[1];
           if (!_.has(modifiedSvcObject, arrayAttribName)) {
             modifiedSvcObject[arrayAttribName] = [];
           }
-          const newVal = { type: typeValue };
-          _.set(newVal, arrayAttribName.slice(0, -1), hullAttribValue);
-          const arrayVal = _.concat(
-            _.get(modifiedSvcObject, arrayAttribName),
-            newVal
-          );
-          modifiedSvcObject[arrayAttribName] = arrayVal;
+
+          _.each(hullValues, hullValue => {
+            const newVal = { type: typeValue };
+            _.set(newVal, arrayAttribName.slice(0, -1), hullAttribValue);
+            const arrayVal = _.concat(
+              _.get(modifiedSvcObject, arrayAttribName),
+              newVal
+            );
+            modifiedSvcObject[arrayAttribName] = arrayVal;
+          });
         } else {
           // Regular case, just set whatever we get from hull to the field
           modifiedSvcObject[svcAttribName] = hullAttribValue;
@@ -374,6 +382,22 @@ class MappingUtil {
       },
       {}
     );
+  }
+
+  mergeContact(contactRead, contactWrite) {
+    _.each(
+      ["phone", "url", "email"],
+      subAttr => {
+        const parentAttr = `${subAttr}s`;
+        contactWrite[parentAttr] = _.unionBy(
+          contactWrite[parentAttr],
+          contactRead[parentAttr],
+          subAttr
+        );
+      }
+    );
+
+    return contactWrite;
   }
 
   /**
