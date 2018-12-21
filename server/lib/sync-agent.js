@@ -513,8 +513,9 @@ class SyncAgent {
         .logger.info("outgoing.user.skip", envelope.skipReason);
     });
 
+    const toUpdateContactEnvelopes = await this.cleanToUpdateContactEnvelopes(filterResults.toUpdate);
     const updatedEnvelopes = await this.serviceClient.putContactEnvelopes(
-      filterResults.toUpdate
+      toUpdateContactEnvelopes
     );
 
     await Promise.all(
@@ -827,7 +828,7 @@ class SyncAgent {
         return {};
       }
 
-      const leadLatestEmails = (await this.serviceClient.getLeadEmails(leadId)).data;
+      const leadLatestEmails = (await this.serviceClient.getLeadEmails(leadId)).body.data;
       
       return _.get(_.reject(leadLatestEmails, ['date_sent', null]), "[0]", {});
     } catch (e) {
@@ -835,7 +836,24 @@ class SyncAgent {
     }
   }
 
-
+  cleanToUpdateContactEnvelopes(envelopes) {
+    return Promise.all(_.map(
+      envelopes,
+      async envelope => {
+        try {
+          const actualContactRead = (await this.serviceClient.getContact(envelope.cioContactWrite.id)).body;
+          
+          
+          envelope.cioContactWrite = this.mappingUtil.mergeContact(
+            actualContactRead,
+            envelope.cioContactWrite
+          )
+        } catch (e) {
+          return envelope;
+        }
+      }
+    ))
+  }
 
   /**
    * Checks whether the API key is provided at all and hypothetically valid.
